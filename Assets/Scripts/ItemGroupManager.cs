@@ -5,6 +5,7 @@ using UnityEngine;
 public class ItemGroupManager : MonoBehaviour
 {
     private GameEssentials gameEssentials;
+    private GameManager gameManager;
 
     public List<GameObject> physicsItems = new List<GameObject>();
     public bool collisionObject = true;
@@ -12,12 +13,13 @@ public class ItemGroupManager : MonoBehaviour
 
     private Vector3[] slotLocalPositions;
     private Vector3[] slotLocalRotation;
-
     public ItemType.ItemTypeList itemGroupType;
+
 
     private void Start()
     {
-        gameEssentials = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameEssentials>();
+        gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
+        gameEssentials = gameManager.GetComponent<GameEssentials>();
 
         slotLocalPositions = new Vector3[physicsItems.Count];
         slotLocalRotation = new Vector3[physicsItems.Count];
@@ -38,7 +40,7 @@ public class ItemGroupManager : MonoBehaviour
             }
         }
 
-        FreeItem(5); //Test
+        FreeItem(6); //Test
     }
 
     public int SetObjectKinematicState(GameObject go, bool state)
@@ -55,6 +57,7 @@ public class ItemGroupManager : MonoBehaviour
             {
                 if(itemGroupType == go.GetComponent<ItemType>().itemType) //Check if object is the same type as the group
                 {
+                    gameEssentials.interactionAudioSource.PlayOneShot(gameEssentials.storeSound, 0.6f);
                     physicsItems[i] = go;
                     go.transform.parent = transform;
                     go.transform.localPosition = slotLocalPositions[i];
@@ -63,6 +66,8 @@ public class ItemGroupManager : MonoBehaviour
 
                     gameEssentials.playerInteractions.isHoldingItem = false;
                     gameEssentials.playerInteractions.holdingObject = null;
+
+                    gameManager.AddScore(5);
 
                     return;
                 }

@@ -8,4 +8,7 @@ public class GameEssentials : MonoBehaviour
     public ElectricSwitch electricSwitch;
     public PlayerInteractions playerInteractions;
     public GameObject playerObject;
+
+    public AudioSource interactionAudioSource;
+    public AudioClip storeSound;
 }

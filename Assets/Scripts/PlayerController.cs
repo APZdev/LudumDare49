@@ -78,7 +78,7 @@ public class PlayerController : MonoBehaviour
             {
                 int rng = Random.Range(0, footstepsAudioClips.Length);
 
-                audioSource.PlayOneShot(footstepsAudioClips[rng], 0.75f);
+                audioSource.PlayOneShot(footstepsAudioClips[rng], 0.4f);
                 footstepElaspedTime = 0;
             }
         }

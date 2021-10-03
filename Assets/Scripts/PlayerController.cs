@@ -5,8 +5,10 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     private Rigidbody rb;
+    private Animator anim;
 
     public float playerSpeed = 5f;
+    public float jumpForce = 5f;
     public float gravityForce = 5f;
 
     public GameObject playerGraphics;
@@ -14,22 +16,19 @@ public class PlayerController : MonoBehaviour
 
     private bool isFliped;
     private float horizontal;
+    private bool isGrounded;
 
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
-    }
+        anim = GetComponentInChildren<Animator>();
+    }   
 
     private void Update()
     {
-        PlayerInputs();
         PlayerGraphics();
         PlayerMovements();
-    }
-
-    private void PlayerInputs()
-    {
-        horizontal = Input.GetAxisRaw("Horizontal");
+        PlayerAnimations();
     }
 
     private void PlayerGraphics()
@@ -50,16 +49,24 @@ public class PlayerController : MonoBehaviour
     {
         horizontal = Input.GetAxisRaw("Horizontal");
 
-
         rb.AddForce(transform.right * Input.GetAxisRaw("Horizontal") * playerSpeed * Time.deltaTime);
 
-        if (!GroundCheck())
+        isGrounded = GroundCheck();
+
+        if (!isGrounded)
             rb.AddForce(transform.up * -gravityForce);
+
+        if(Input.GetKeyDown(KeyCode.Space) && isGrounded)
+            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+    }
+
+    private void PlayerAnimations()
+    {
+        anim.SetBool("IsMoving", horizontal != 0 && rb.velocity.sqrMagnitude > 1f);
     }
 
     private bool GroundCheck()
     {
-        Debug.DrawRay(transform.position, Vector3.down);
         return Physics.Raycast(transform.position, Vector3.down, 0.1f);
     }
 }

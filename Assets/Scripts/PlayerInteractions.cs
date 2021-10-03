@@ -13,9 +13,9 @@ public class PlayerInteractions : MonoBehaviour
     private float elapsedCooldownTime;
 
     public Transform handTarget;
-    [HideInInspector] public bool isHoldingItem;
-    [HideInInspector] public GameObject holdingObject;
-    private ItemType.ItemTypeList holdingItemType;
+    public bool isHoldingItem;
+    public GameObject holdingObject;
+    public ItemType.ItemTypeList holdingItemType;
 
 
     private void Start()
@@ -57,25 +57,28 @@ public class PlayerInteractions : MonoBehaviour
         SetCooldownBar(Color.red, 1f);
         foreach(Collider hit in hitObjects)
         {
-            if (hit.GetComponent<ItemType>() && !isHoldingItem)
+            if (!isHoldingItem)
             {
-                if(!hit.GetComponent<ItemType>().isStored) //Check only non stored items
+                if(hit.GetComponent<ItemType>())
                 {
-                    elapsedCooldownTime = Input.GetMouseButton(0) ? elapsedCooldownTime + Time.deltaTime : 0;
-
-                    SetCooldownBar(Color.green, 1 - elapsedCooldownTime);
-
-                    if(elapsedCooldownTime > 1) //Check if button got pressed for 1 sec
+                    if(!hit.GetComponent<ItemType>().isStored) //Check only non stored items
                     {
-                        elapsedCooldownTime = 0;
-                        hit.GetComponent<Rigidbody>().isKinematic = true;
-                        hit.isTrigger = true;
-                        hit.transform.SetParent(handTarget);
-                        hit.transform.localPosition = Vector3.zero;
+                        elapsedCooldownTime = Input.GetMouseButton(0) ? elapsedCooldownTime + Time.deltaTime : 0;
 
-                        isHoldingItem = true;
-                        holdingItemType = hit.GetComponent<ItemType>().itemType;
-                        holdingObject = hit.gameObject;
+                        SetCooldownBar(Color.green, 1 - elapsedCooldownTime);
+
+                        if(elapsedCooldownTime > 1) //Check if button got pressed for 1 sec
+                        {
+                            elapsedCooldownTime = 0;
+                            hit.GetComponent<Rigidbody>().isKinematic = true;
+                            hit.isTrigger = true;
+                            hit.transform.SetParent(handTarget);
+                            hit.transform.localPosition = Vector3.zero;
+
+                            isHoldingItem = true;
+                            holdingItemType = hit.GetComponent<ItemType>().itemType;
+                            holdingObject = hit.gameObject;
+                        }
                     }
                 }
             }

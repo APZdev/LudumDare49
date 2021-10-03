@@ -17,5 +17,5 @@ public class ItemType : MonoBehaviour
 
     public ItemTypeList itemType;
 
-    private void Start() => isStored = true;
+    private void Awake() => isStored = true;
 }

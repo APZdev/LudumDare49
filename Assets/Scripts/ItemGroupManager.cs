@@ -49,7 +49,7 @@ public class ItemGroupManager : MonoBehaviour
 
     public void StoreItem(GameObject go)
     {
-        for (int i = 0; i < physicsItems.Count; i++)
+        for (int i = physicsItems.Count - 1; i >= 0; i--)
         {
             if(physicsItems[i] == null && go.GetComponent<ItemType>()) //Check if object exists on slot and if it has a itemType component
             {
@@ -78,10 +78,12 @@ public class ItemGroupManager : MonoBehaviour
         {
             if (count < 1) return; //Don't change object state if we already changed the correct amount
 
-            if (physicsItems[i] != null)
+            if (physicsItems[i].GetComponent<ItemType>())
             {
-                count -= SetObjectKinematicState(physicsItems[i], false);
                 physicsItems[i].GetComponent<ItemType>().isStored = false;
+                count -= SetObjectKinematicState(physicsItems[i], false);
+                physicsItems[i].GetComponent<Rigidbody>().AddForce(Vector3.up * 5f, ForceMode.Impulse);
+                physicsItems[i].GetComponent<Rigidbody>().AddRelativeTorque(new Vector3(3.5f, 3.5f, 3.5f), ForceMode.Impulse);
                 physicsItems[i] = null;
             }
         }

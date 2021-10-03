@@ -6,6 +6,7 @@ public class PlayerController : MonoBehaviour
 {
     private Rigidbody rb;
     private Animator anim;
+    private AudioSource audioSource;
 
     public float playerSpeed = 5f;
     public float jumpForce = 5f;
@@ -13,6 +14,11 @@ public class PlayerController : MonoBehaviour
 
     public GameObject playerGraphics;
     public float flipSpeed;
+
+    public AudioClip[] footstepsAudioClips;
+    public float footstepsIntervall;
+
+    private float footstepElaspedTime;
 
     private bool isFliped;
     private float horizontal;
@@ -22,6 +28,7 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         anim = GetComponentInChildren<Animator>();
+        audioSource = GetComponent<AudioSource>();
     }   
 
     private void Update()
@@ -29,6 +36,7 @@ public class PlayerController : MonoBehaviour
         PlayerGraphics();
         PlayerMovements();
         PlayerAnimations();
+        PlayerFootsteps();
     }
 
     private void PlayerGraphics()
@@ -58,6 +66,22 @@ public class PlayerController : MonoBehaviour
 
         if(Input.GetKeyDown(KeyCode.Space) && isGrounded)
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+    }
+
+    private void PlayerFootsteps()
+    {
+        if(rb.velocity.sqrMagnitude > 1 && horizontal != 0)
+        {
+            footstepElaspedTime += Time.deltaTime;
+
+            if(footstepElaspedTime >= footstepsIntervall)
+            {
+                int rng = Random.Range(0, footstepsAudioClips.Length);
+
+                audioSource.PlayOneShot(footstepsAudioClips[rng], 0.75f);
+                footstepElaspedTime = 0;
+            }
+        }
     }
 
     private void PlayerAnimations()

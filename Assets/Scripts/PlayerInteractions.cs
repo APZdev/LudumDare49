@@ -15,7 +15,7 @@ public class PlayerInteractions : MonoBehaviour
 
     [HideInInspector] public bool isHoldingItem;
     [HideInInspector] public GameObject holdingObject;
-    private ItemType.ItemTypeList holdingItemType;
+    [HideInInspector] public ItemType.ItemTypeList holdingItemType;
 
 
     private void Start()

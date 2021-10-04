@@ -4885,6 +4885,7 @@ MonoBehaviour:
   handTarget: {fileID: 1255332788}
   shipTarget: {fileID: 1754581855}
   pickupSound: {fileID: 8300000, guid: 26401d2847081194e8fd83ec45d5328c, type: 3}
+  repairShipSound: {fileID: 8300000, guid: c0fc6ae8fe603b243809eca46d02a824, type: 3}
   plankPrefab: {fileID: 3269548005339866301, guid: 09388df82ec06ff4ea94591f62db103b, type: 3}
   isHoldingItem: 0
   holdingObject: {fileID: 0}
@@ -14387,8 +14388,8 @@ MonoBehaviour:
   endGameScoreTxt: {fileID: 1072772668}
   shipStabilityBar: {fileID: 90266398}
   shipStabilityText: {fileID: 1837803836}
-  attackStartTimeout: 10
-  attackStartCooldown: 5
+  attackStartTimeout: 13
+  attackStartCooldown: 25
   attackCounter: 0
   shipDamagePoints:
   - {fileID: 220015535}
@@ -15449,7 +15450,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278244095
+    rgba: 54015
   m_fontColor: {r: 1, g: 0.82385063, b: 0, a: 0}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -17993,7 +17994,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278244095
+    rgba: 54015
   m_fontColor: {r: 1, g: 0.82385063, b: 0, a: 0}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -19053,7 +19054,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278244095
+    rgba: 54015
   m_fontColor: {r: 1, g: 0.82385063, b: 0, a: 0}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -22425,7 +22426,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278216447
+    rgba: 26367
   m_fontColor: {r: 1, g: 0.3993749, b: 0, a: 0}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -23108,7 +23109,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278244095
+    rgba: 54015
   m_fontColor: {r: 1, g: 0.82385063, b: 0, a: 0}
   m_enableVertexGradient: 0
   m_colorMode: 3

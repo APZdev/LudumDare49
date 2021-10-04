@@ -11,6 +11,7 @@ public class PlayerInteractions : MonoBehaviour
     public Transform handTarget;
     public Transform shipTarget;
     public AudioClip pickupSound;
+    public AudioClip repairShipSound;
 
     public GameObject plankPrefab;
 
@@ -106,6 +107,8 @@ public class PlayerInteractions : MonoBehaviour
                         //Reset the waterHole state to make it available for another ship hit
                         gameEssentials.gameManager.shipDamagePointsStates[hit.GetComponent<WaterHoleInfo>().waterHoleId] = false;
 
+                        audioSource.PlayOneShot(repairShipSound, 1f);
+
                         //Add score
                         gameEssentials.gameManager.AddScore(10);
 
@@ -145,7 +148,6 @@ public class PlayerInteractions : MonoBehaviour
                 }
                 else if (isHoldingItem && holdingObject != null)
                 {
-                    Debug.Log(holdingObject.name);
                     if(hit.GetComponent<ItemGroupManager>())
                     {
                         hit.GetComponent<ItemGroupManager>().StoreItem(holdingObject);

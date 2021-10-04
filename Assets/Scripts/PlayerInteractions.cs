@@ -42,10 +42,16 @@ public class PlayerInteractions : MonoBehaviour
         {
             if(Input.GetMouseButtonUp(0))
             {
-                if (Input.mousePosition.y >= Screen.currentResolution.height / 2)
-                    gameEssentials.elevatorController.OnCall_ElevatorUp();
-                else
-                    gameEssentials.elevatorController.OnCall_ElevatorDown();
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hit;
+
+                if (Physics.Raycast(ray, out hit, 100))
+                {
+                    if(hit.collider.gameObject.tag == "ElevatorUp")
+                        gameEssentials.elevatorController.OnCall_ElevatorUp();
+                    else if (hit.collider.gameObject.tag == "ElevatorDown")
+                        gameEssentials.elevatorController.OnCall_ElevatorDown();
+                }
             }
         }
     }
@@ -147,10 +153,23 @@ public class PlayerInteractions : MonoBehaviour
                     //Check that we are not in the elevator nor in front of the electrical switch
                     else if (!gameEssentials.elevatorController.canUseElevator && !gameEssentials.electricSwitch.canChange) //Drop item
                     { 
-                        holdingObject.transform.SetParent(shipTarget);
-                        holdingObject.GetComponent<Rigidbody>().isKinematic = false;
-                        holdingObject.GetComponent<Collider>().isTrigger = false;
-                        holdingObject = null;
+                        if(holdingItemType == ItemType.ItemTypeList.Plank)
+                        {
+                            holdingObject.transform.SetParent(shipTarget);
+                            holdingObject.GetComponent<Rigidbody>().isKinematic = false;
+                            holdingObject.GetComponent<Collider>().isTrigger = false;
+                            holdingObject.GetComponent<ItemType>().isStored = false;
+                            Destroy(holdingObject, 2f);
+
+                        }
+                        else
+                        {
+                            holdingObject.transform.SetParent(shipTarget);
+                            holdingObject.GetComponent<Rigidbody>().isKinematic = false;
+                            holdingObject.GetComponent<Collider>().isTrigger = false;
+                            holdingObject = null;
+                        }
+
                     }
                     return;
                 }

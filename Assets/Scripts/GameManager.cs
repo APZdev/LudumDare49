@@ -8,6 +8,9 @@ public class GameManager : MonoBehaviour
 {
     private GameEssentials gameEssentials;
 
+    public Animator endGameAnim;
+    public Animator endGameUIAnim;
+
     public AudioSource audioSource;
     public AudioClip canonSoundClip;
     public AudioClip[] shipHitClips;
@@ -18,6 +21,7 @@ public class GameManager : MonoBehaviour
     public float boatStability = 1;
 
     public TextMeshProUGUI scoreTxt;
+    public TextMeshProUGUI endGameScoreTxt;
     public Image shipStabilityBar;
     public TextMeshProUGUI shipStabilityText;
 
@@ -53,8 +57,11 @@ public class GameManager : MonoBehaviour
         GetShipStability();
         UpdateUI();
 
-        if (boatStability < 0.10f)
+        if (boatStability < 0.1f)
         {
+            endGameAnim.CrossFade("WaterCover", 0);
+            endGameUIAnim.CrossFade("WaterCover", 0);
+
             Debug.Log("You Lose");
         }
     }
@@ -62,6 +69,7 @@ public class GameManager : MonoBehaviour
     private void UpdateUI()
     {
         scoreTxt.text = totalScore.ToString();
+        endGameScoreTxt.text = $"SCORE : {totalScore}";
 
         shipStabilityBar.fillAmount = boatStability;
     }
@@ -76,7 +84,7 @@ public class GameManager : MonoBehaviour
         }
 
         boatStability = (float)(storedItemsCount + maxHoles - currentHolesNumber) / (registeredItems.Length + maxHoles);  
-        shipStabilityText.text = $"{storedItemsCount + maxHoles}/{registeredItems.Length + maxHoles}";
+        shipStabilityText.text = $"{storedItemsCount + maxHoles - currentHolesNumber}/{registeredItems.Length + maxHoles}";
     }
 
     private IEnumerator ShipAttack()

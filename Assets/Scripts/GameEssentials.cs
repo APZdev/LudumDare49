@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class GameEssentials : MonoBehaviour
 {
-
     public GameManager gameManager;
+    public GameUIManager gameUIManager;
     public ElevatorController elevatorController;
     public ElectricSwitch electricSwitch;
     public PlayerInteractions playerInteractions;

@@ -9,6 +9,9 @@ public class AudioManager : MonoBehaviour
     public AudioClip ambientNoise;
     public AudioClip[] squeakNoiseClips;
 
+    public AudioClip hoverSound;
+
+
     private float squeakElapsedTime;
 
     private void Start()
@@ -27,5 +30,10 @@ public class AudioManager : MonoBehaviour
             audioSource.PlayOneShot(squeakNoiseClips[rng], 3.5f);
             squeakElapsedTime = 0;
         }
+    }
+
+    public void HoverSound()
+    {
+        audioSource.PlayOneShot(hoverSound);
     }
 }

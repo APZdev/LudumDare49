@@ -43,7 +43,7 @@ public class WoodStorageManager : MonoBehaviour
     {
         woodCooldownElapsedTime += Time.deltaTime;
 
-        if (woodCooldownElapsedTime > 10)
+        if (woodCooldownElapsedTime > 15)
         {
             woodRessources++;
             woodCooldownElapsedTime = 0;

@@ -115,7 +115,9 @@ public class PlayerInteractions : MonoBehaviour
                         //Destroy plank in hand
                         Destroy(holdingObject);
                         holdingObject = null;
+                        holdingItemType = ItemType.ItemTypeList.None;
 
+                        return; //Prevent repairing two holes at the same time
                     }
                 }
             }
@@ -126,7 +128,7 @@ public class PlayerInteractions : MonoBehaviour
     {
         isHoldingItem = holdingObject != null ? true : false;
 
-        Collider[] hitObjects = Physics.OverlapBox(transform.position, new Vector3(2f, 2f, 2f), Quaternion.identity);
+        Collider[] hitObjects = Physics.OverlapBox(transform.position, new Vector3(2f, 1f, 2f), Quaternion.identity);
 
         if (Input.GetMouseButtonDown(0)) //Check if button got pressed for 1 sec
         {
@@ -161,6 +163,7 @@ public class PlayerInteractions : MonoBehaviour
                             holdingObject.GetComponent<Rigidbody>().isKinematic = false;
                             holdingObject.GetComponent<Collider>().isTrigger = false;
                             holdingObject.GetComponent<ItemType>().isStored = false;
+                            holdingItemType = ItemType.ItemTypeList.None;
                             Destroy(holdingObject, 2f);
 
                         }
@@ -169,6 +172,7 @@ public class PlayerInteractions : MonoBehaviour
                             holdingObject.transform.SetParent(shipTarget);
                             holdingObject.GetComponent<Rigidbody>().isKinematic = false;
                             holdingObject.GetComponent<Collider>().isTrigger = false;
+                            holdingItemType = ItemType.ItemTypeList.None;
                             holdingObject = null;
                         }
 

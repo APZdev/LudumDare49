@@ -23,11 +23,12 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI scoreTxt;
     public TextMeshProUGUI endGameScoreTxt;
     public Image shipStabilityBar;
-    public TextMeshProUGUI shipStabilityText;
 
     public int attackStartTimeout;
     public int attackStartCooldown;
     public int attackCounter = 1;
+
+    public GameObject indicatorLight;
 
 
     private GameObject[] registeredItems;
@@ -38,6 +39,9 @@ public class GameManager : MonoBehaviour
     [HideInInspector] public bool[] shipDamagePointsStates;
     public GameObject waterHolePrefab;
 
+    public bool isPlaying;
+    public bool gameIsPaused;
+    public GameObject pauseMenu;
 
     private void Start()
     {
@@ -46,7 +50,7 @@ public class GameManager : MonoBehaviour
         registeredItemGroups = FindObjectsOfType<ItemGroupManager>();
 
         currentHolesNumber = 0;
-
+        isPlaying = true;
 
         shipDamagePointsStates = new bool[shipDamagePoints.Length];
         StartCoroutine(ShipAttack());
@@ -55,14 +59,37 @@ public class GameManager : MonoBehaviour
     private void Update()
     {
         GetShipStability();
-        UpdateUI();
+        ShipMovingWithStability();
+        ShipSinkCheck();
+        PlaceIndicatorLight();
 
+        ChangePauseMenuState();
+        UpdateUI();
+    }
+
+    private void ChangePauseMenuState()
+    {
+        if(Input.GetKeyDown(KeyCode.Escape) && isPlaying)
+        {
+            gameIsPaused = !gameIsPaused;
+        }
+
+        pauseMenu.SetActive(gameIsPaused);
+        int state = gameIsPaused ? 0 : 1;
+        Time.timeScale = state;
+    }
+
+    public void SetPauseGameState(bool state) => gameIsPaused = state;
+
+    private void ShipSinkCheck()
+    {
         if (boatStability < 0.1f)
         {
             endGameAnim.CrossFade("WaterCover", 0);
             endGameUIAnim.CrossFade("WaterCover", 0);
 
-            Debug.Log("You Lose");
+            isPlaying = false;
+            Time.timeScale = 0;
         }
     }
 
@@ -84,7 +111,14 @@ public class GameManager : MonoBehaviour
         }
 
         boatStability = (float)(storedItemsCount + maxHoles - currentHolesNumber) / (registeredItems.Length + maxHoles);  
-        shipStabilityText.text = $"{storedItemsCount + maxHoles - currentHolesNumber}/{registeredItems.Length + maxHoles}";
+    }
+
+    private void ShipMovingWithStability()
+    {
+        gameEssentials.shipController.waveAmount = 6 * (1 - boatStability);
+        gameEssentials.shipController.rotAngle = 35 * (1 - boatStability);
+        gameEssentials.shipController.rotSpeed = 2 * (1 - boatStability);
+        gameEssentials.shipController.rotSmooth = 5 * (1 - boatStability);
     }
 
     private IEnumerator ShipAttack()
@@ -92,11 +126,9 @@ public class GameManager : MonoBehaviour
         attackCounter = 1;
         yield return new WaitForSeconds(attackStartTimeout);
 
-        while (true)
+        while (isPlaying)
         {
-            float currentAttackRate = attackCounter > attackStartCooldown ? 1f : attackStartCooldown - (1 / 1.25f) * attackCounter;
-
-            audioSource.PlayOneShot(canonSoundClip, 0.4f);
+            audioSource.PlayOneShot(canonSoundClip, 0.2f);
             yield return new WaitForSeconds(0.75f);
             audioSource.PlayOneShot(shipHitClips[Random.Range(0, shipHitClips.Length)], 0.2f);
             yield return new WaitForSeconds(0.25f);
@@ -111,37 +143,64 @@ public class GameManager : MonoBehaviour
             {
                 targetedGroups[1] = Random.Range(0, registeredItemGroups.Length);
             }
-            while (targetedGroups[0] != targetedGroups[1]);
+            while (targetedGroups[0] == targetedGroups[1]);
 
             foreach(int groupId in targetedGroups)
             {
                 registeredItemGroups[groupId].FreeItem(Random.Range(1, 3));
             }
 
-            //Create water hole in the ship randomly
-            int randomPoint = 0;
-            do
+            if(currentHolesNumber < maxHoles)
             {
-                randomPoint = Random.Range(0, shipDamagePoints.Length);
-            } 
-            while (shipDamagePointsStates[randomPoint] && currentHolesNumber < maxHoles);
+                //Create water hole in the ship randomly
+                int randomPoint = 0;
+                do
+                {
+                    randomPoint = Random.Range(0, shipDamagePoints.Length);
+                } 
+                while (shipDamagePointsStates[randomPoint]);
+
+                GameObject waterHole = Instantiate(waterHolePrefab, shipDamagePoints[randomPoint]);
+                waterHole.GetComponent<WaterHoleInfo>().waterHoleId = randomPoint;
+                waterHole.transform.localPosition = Vector3.zero;
+                waterHole.transform.localEulerAngles = new Vector3(0, 90, 0);
+                shipDamagePointsStates[randomPoint] = true;
+            }
 
             //1 chance out of 3 to turn off the electricity
             int elevatorSwitch = Random.Range(0, 3);
-            if(elevatorSwitch == 1)
+            if (elevatorSwitch == 1)
             {
                 gameEssentials.electricSwitch.switchOn = false;
             }
 
-            GameObject waterHole = Instantiate(waterHolePrefab, shipDamagePoints[randomPoint]);
-            waterHole.GetComponent<WaterHoleInfo>().waterHoleId = randomPoint;
-            waterHole.transform.localPosition = Vector3.zero;
-            waterHole.transform.localEulerAngles = new Vector3(0, 90, 0);
-            shipDamagePointsStates[randomPoint] = true;
+            float currentAttackRate = attackStartCooldown - (1 / 105 * Mathf.Pow(attackCounter, 2));
+
+            if (currentAttackRate <= 0)
+                currentAttackRate = 3f;
 
             yield return new WaitForSeconds(currentAttackRate);
 
             attackCounter++;
+        }
+    }
+
+    private void PlaceIndicatorLight()
+    {
+        for (int i = 0; i < registeredItemGroups.Length; i++)
+        {
+            if(registeredItemGroups[i].GetComponent<ItemGroupManager>().itemGroupType == gameEssentials.playerInteractions.holdingItemType)
+            {
+                indicatorLight.SetActive(true);
+                indicatorLight.transform.position = new Vector3(registeredItemGroups[i].transform.position.x, 
+                                                                registeredItemGroups[i].transform.position.y, 
+                                                                indicatorLight.transform.position.z) +
+                                                                Vector3.up * 3f;
+            }
+            else if(gameEssentials.playerInteractions.holdingItemType == ItemType.ItemTypeList.None)
+            {
+                indicatorLight.SetActive(false);
+            }
         }
     }
 

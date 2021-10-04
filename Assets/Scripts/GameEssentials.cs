@@ -12,6 +12,7 @@ public class GameEssentials : MonoBehaviour
     public CameraEffects cameraEffects;
     public WoodStorageManager woodStorageManager;
     public GameObject playerObject;
+    public ShipController shipController;
 
     public AudioSource interactionAudioSource;
     public AudioClip storeSound;

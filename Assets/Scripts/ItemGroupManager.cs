@@ -40,7 +40,7 @@ public class ItemGroupManager : MonoBehaviour
             }
         }
 
-        FreeItem(6); //Test
+        FreeItem(2);
     }
 
     public int SetObjectKinematicState(GameObject go, bool state)
@@ -66,6 +66,7 @@ public class ItemGroupManager : MonoBehaviour
 
                     gameEssentials.playerInteractions.isHoldingItem = false;
                     gameEssentials.playerInteractions.holdingObject = null;
+                    gameEssentials.playerInteractions.holdingItemType = ItemType.ItemTypeList.None;
 
                     gameManager.AddScore(5);
 
@@ -90,7 +91,7 @@ public class ItemGroupManager : MonoBehaviour
                     physicsItems[i].GetComponent<ItemType>().isStored = false;
                     count -= SetObjectKinematicState(physicsItems[i], false);
                     physicsItems[i].GetComponent<Collider>().isTrigger = false;
-                    physicsItems[i].GetComponent<Rigidbody>().AddForce(Vector3.up * 5f, ForceMode.Impulse);
+                    physicsItems[i].GetComponent<Rigidbody>().AddForce(Vector3.up * 5f + Vector3.right * 5f, ForceMode.Impulse);
                     physicsItems[i].GetComponent<Rigidbody>().AddRelativeTorque(new Vector3(3.5f, 3.5f, 3.5f), ForceMode.Impulse);
                     physicsItems[i] = null;
                 }

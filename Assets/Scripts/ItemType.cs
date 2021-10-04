@@ -8,11 +8,13 @@ public class ItemType : MonoBehaviour
 
     public enum ItemTypeList
     {
+        None,
         Weapon,
         Barrel,
         CanonBall,
         Wood,
         Canon,
+        Crate,
         Plank
     }
 

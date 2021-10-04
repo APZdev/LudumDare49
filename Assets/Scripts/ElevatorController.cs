@@ -11,6 +11,7 @@ public class ElevatorController : MonoBehaviour
     public float[] wayPoints = new float[3];
     public Transform elevatorObject;
     public Transform playerContainerObject;
+    public BoxCollider elevatorCollider;
 
     public AudioClip elevatorNoise;
 
@@ -35,6 +36,8 @@ public class ElevatorController : MonoBehaviour
     {
         if(!gameEssentials.electricSwitch.switchOn)
             currentLevel = 0;
+
+        elevatorCollider.isTrigger = !gameEssentials.electricSwitch.switchOn;
 
         elevatorObject.localPosition = Vector3.Lerp(elevatorObject.localPosition, new Vector3(elevatorObject.localPosition.x, targetPosition.y, elevatorObject.localPosition.z), elevatorSpeed * Time.deltaTime);
 

@@ -12,10 +12,11 @@ public class PlayerInteractions : MonoBehaviour
     public Transform shipTarget;
     public AudioClip pickupSound;
 
+    public GameObject plankPrefab;
 
-    [HideInInspector] public bool isHoldingItem;
-    [HideInInspector] public GameObject holdingObject;
-    [HideInInspector] public ItemType.ItemTypeList holdingItemType;
+    public bool isHoldingItem;
+    public GameObject holdingObject;
+    public ItemType.ItemTypeList holdingItemType;
 
 
     private void Start()
@@ -30,7 +31,9 @@ public class PlayerInteractions : MonoBehaviour
     {
         ElectricSwitch();
         ElevatorState();
+        RepairShip();
         DetectNearbyItem();
+        WoodStorage();
     }
 
     private void ElevatorState()
@@ -56,8 +59,64 @@ public class PlayerInteractions : MonoBehaviour
         }
     }
 
+    private void WoodStorage()
+    {
+        isHoldingItem = holdingObject != null ? true : false;
+
+        if (gameEssentials.woodStorageManager.canPickupWood && !isHoldingItem)
+        {
+            if (Input.GetMouseButtonDown(0) && gameEssentials.woodStorageManager.woodRessources > 0)
+            {
+                GameObject plankObject = Instantiate(plankPrefab, handTarget);
+                gameEssentials.woodStorageManager.woodRessources--;
+
+                audioSource.PlayOneShot(pickupSound, 1f);
+
+                plankObject.GetComponent<Rigidbody>().isKinematic = true;
+                plankObject.GetComponent<Collider>().isTrigger = true;
+                plankObject.transform.localPosition = Vector3.zero;
+
+                holdingItemType = plankObject.GetComponent<ItemType>().itemType;
+                holdingObject = plankObject.gameObject;
+            }
+        }
+    }
+
+    private void RepairShip()
+    {
+        if(isHoldingItem && holdingItemType == ItemType.ItemTypeList.Plank)
+        {
+            Collider[] hitObjects = Physics.OverlapBox(transform.position, new Vector3(2f, 2f, 2f), Quaternion.identity);
+
+            foreach (Collider hit in hitObjects)
+            {
+                if(hit.GetComponent<WaterHoleInfo>())
+                {
+                    if(Input.GetMouseButtonDown(0))
+                    {
+                        //Destroy waterHole
+                        Destroy(hit.gameObject);
+
+                        //Reset the waterHole state to make it available for another ship hit
+                        gameEssentials.gameManager.shipDamagePointsStates[hit.GetComponent<WaterHoleInfo>().waterHoleId] = false;
+
+                        //Add score
+                        gameEssentials.gameManager.AddScore(10);
+
+                        //Destroy plank in hand
+                        Destroy(holdingObject);
+                        holdingObject = null;
+
+                    }
+                }
+            }
+        }
+    }
+
     private void DetectNearbyItem()
     {
+        isHoldingItem = holdingObject != null ? true : false;
+
         Collider[] hitObjects = Physics.OverlapBox(transform.position, new Vector3(2f, 2f, 2f), Quaternion.identity);
 
         if (Input.GetMouseButtonDown(0)) //Check if button got pressed for 1 sec
@@ -74,24 +133,23 @@ public class PlayerInteractions : MonoBehaviour
                     hit.transform.SetParent(handTarget);
                     hit.transform.localPosition = Vector3.zero;
 
-                    isHoldingItem = true;
                     holdingItemType = hit.GetComponent<ItemType>().itemType;
                     holdingObject = hit.gameObject;
                     return;
                 }
-                else if (isHoldingItem)
+                else if (isHoldingItem && holdingObject != null)
                 {
+                    Debug.Log(holdingObject.name);
                     if(hit.GetComponent<ItemGroupManager>())
                     {
                         hit.GetComponent<ItemGroupManager>().StoreItem(holdingObject);
                     }
                     //Check that we are not in the elevator nor in front of the electrical switch
-                    else if (!gameEssentials.elevatorController.canUseElevator && !gameEssentials.electricSwitch.canChange)
+                    else if (!gameEssentials.elevatorController.canUseElevator && !gameEssentials.electricSwitch.canChange) //Drop item
                     { 
                         holdingObject.transform.SetParent(shipTarget);
                         holdingObject.GetComponent<Rigidbody>().isKinematic = false;
                         holdingObject.GetComponent<Collider>().isTrigger = false;
-                        isHoldingItem = false;
                         holdingObject = null;
                     }
                     return;

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ItemType : MonoBehaviour
 {
-    public bool isStored;
+    public bool isStored = false;
 
     public enum ItemTypeList
     {
@@ -13,9 +13,15 @@ public class ItemType : MonoBehaviour
         CanonBall,
         Wood,
         Canon,
+        Plank
     }
 
     public ItemTypeList itemType;
 
-    private void Awake() => isStored = true;
+    private void Awake()
+    {
+        if(itemType != ItemTypeList.Plank)
+            isStored = true;
+    }
+
 }

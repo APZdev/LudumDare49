@@ -83,13 +83,17 @@ public class ItemGroupManager : MonoBehaviour
         {
             if (count < 1) return; //Don't change object state if we already changed the correct amount
 
-            if (physicsItems[i].GetComponent<ItemType>())
+            if(physicsItems[i] != null)
             {
-                physicsItems[i].GetComponent<ItemType>().isStored = false;
-                count -= SetObjectKinematicState(physicsItems[i], false);
-                physicsItems[i].GetComponent<Rigidbody>().AddForce(Vector3.up * 5f, ForceMode.Impulse);
-                physicsItems[i].GetComponent<Rigidbody>().AddRelativeTorque(new Vector3(3.5f, 3.5f, 3.5f), ForceMode.Impulse);
-                physicsItems[i] = null;
+                if (physicsItems[i].GetComponent<ItemType>())
+                {
+                    physicsItems[i].GetComponent<ItemType>().isStored = false;
+                    count -= SetObjectKinematicState(physicsItems[i], false);
+                    physicsItems[i].GetComponent<Collider>().isTrigger = false;
+                    physicsItems[i].GetComponent<Rigidbody>().AddForce(Vector3.up * 5f, ForceMode.Impulse);
+                    physicsItems[i].GetComponent<Rigidbody>().AddRelativeTorque(new Vector3(3.5f, 3.5f, 3.5f), ForceMode.Impulse);
+                    physicsItems[i] = null;
+                }
             }
         }
     }

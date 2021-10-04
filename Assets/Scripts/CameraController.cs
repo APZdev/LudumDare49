@@ -23,4 +23,9 @@ public class CameraController : MonoBehaviour
 
         transform.position = Vector3.Lerp(transform.position, new Vector3(finalPos.x, finalPos.y, cameraDepth), smoothSpeed * Time.deltaTime);
     }
+
+    public void CameraShake()
+    {
+
+    }
 }
